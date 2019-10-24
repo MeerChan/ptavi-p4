@@ -7,7 +7,7 @@ import socketserver
 import sys
 
 
-class SIPRegisterHandler(socketserver.DatagramRequestHandler):
+class EchoHandler(socketserver.DatagramRequestHandler):
     """
     Echo server class
     """
@@ -33,7 +33,7 @@ if __name__ == "__main__":
         sys.exit("Port must be a number")
     except IndexError:
         sys.exit("Usage: server.py port")
-    serv = socketserver.UDPServer(('', PORTSERVER), SIPRegisterHandler)
+    serv = socketserver.UDPServer(('', PORTSERVER), EchoHandler)
 
     print("Lanzando servidor UDP de eco...")
     try:
