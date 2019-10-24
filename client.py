@@ -10,16 +10,18 @@ import sys
 try:
     IPSERVER = sys.argv[1]
     PORTSERVER = int(sys.argv[2])
-    # Une las palabras con lo que hay entre ' ',
-    LINE = ' '.join(sys.argv[3:])
+    PETICION = sys.argv[3]
+    ADDRESS = sys.argv[4]
 except IndexError:
-    sys.exit("Usage: client.py ip puerto register line")
+    sys.exit("Usage: client.py ip puerto register sip_address")
 
 # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
     my_socket.connect((IPSERVER, PORTSERVER))
-    print("Enviando:", LINE)
-    my_socket.send(bytes(LINE, 'utf-8') + b'\r\n')
+    print("Enviando:", PETICION.upper() + ' sip:' + ADDRESS + ' SIP/2.0')
+    #Se lo enviamos al servidor
+    my_socket.send(bytes(PETICION.upper() + ' sip:' + ADDRESS + ' SIP/2.0\r\n '
+                            , 'utf-8') + b'\r\n\r\n')
     data = my_socket.recv(1024)
     print('Recibido -- ', data.decode('utf-8'))
 
