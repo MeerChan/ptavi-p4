@@ -13,7 +13,7 @@ try:
     # Une las palabras con lo que hay entre ' ',
     LINE = ' '.join(sys.argv[3:])
 except IndexError:
-    sys.exit("Usage: client.py ip puerto register sip_address expires_value")
+    sys.exit("Usage: client.py ip puerto register line")
 
 # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
