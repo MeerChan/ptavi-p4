@@ -7,7 +7,7 @@ import socketserver
 import sys
 
 
-class EchoHandler(socketserver.DatagramRequestHandler):
+class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     """
     Echo server class
     """
@@ -17,8 +17,10 @@ class EchoHandler(socketserver.DatagramRequestHandler):
         handle method of the server class
         (all requests will be handled by this method)
         """
+
         for line in self.rfile:
             print("El cliente nos manda ", self.client_address, line.decode('utf-8'))
+            self.wfile.write(line)
 
 if __name__ == "__main__":
     # Listens at localhost ('') port 6001
@@ -31,7 +33,7 @@ if __name__ == "__main__":
         sys.exit("Port must be a number")
     except IndexError:
         sys.exit("Usage: server.py port")
-    serv = socketserver.UDPServer(('', PORTSERVER), EchoHandler)
+    serv = socketserver.UDPServer(('', PORTSERVER), SIPRegisterHandler)
 
     print("Lanzando servidor UDP de eco...")
     try:
