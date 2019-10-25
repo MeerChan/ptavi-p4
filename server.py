@@ -8,12 +8,12 @@ import sys
 import time
 import json
 
+
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     """
     Echo server class
     """
     dicc = {}
-
 
     def json2register(self):
         """Descargo fichero json en el diccionario."""
@@ -33,7 +33,6 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         with open('registered.json', 'w') as jsonfile:
             json.dump(self.dicc, jsonfile, indent=4)
 
-
     def handle(self):
         """
         handle method of the server class
@@ -50,28 +49,30 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             (peticion, address, sip, expires) = milinea.split()
             if peticion == 'REGISTER':
                 IP = self.client_address[0]
-                #quito el sip, quedandome con el segundo obejeto del split
+                # quito el sip, quedandome con el segundo obejeto del split
                 user = address.split(':')[1]
                 # Timpo en el que caducaria la sesion (actual+expires)
                 Tiempo = time.time() + int(expires)
-                #convierto el tiempo a horas min segundos
+                # convierto el tiempo a horas min segundos
                 TiempoHMS = time.strftime('%Y-%m-%d %H:%M:%S',
-                                            time.gmtime(Tiempo))
-                #tiempo actual
+                                          time.gmtime(Tiempo))
+                # tiempo actual
                 Ahora = time.strftime('%Y-%m-%d %H:%M:%S',
-                                    time.gmtime(time.time()))
+                                      time.gmtime(time.time()))
                 print(Ahora)
                 self.dicc[user] = {'address': IP, 'expires': TiempoHMS}
                 userBorrados = []
                 for user in self.dicc:
                     if Ahora >= self.dicc[user]['expires']:
                         userBorrados.append(user)
-                #COmo no podemos modificar el tamaño del diccionario mientras
-                #lo recorremos necesitamos hacer esto
+                # COmo no podemos modificar el tamaño del diccionario mientras
+                # lo recorremos necesitamos hacer esto
                 for user in userBorrados:
                     del self.dicc[user]
                 self.register2json()
                 print(self.dicc)
+
+
 if __name__ == "__main__":
     # Listens at localhost ('') port 6001
     # and calls the EchoHandler class to manage the request
