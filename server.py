@@ -14,6 +14,16 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     """
     dicc = {}
 
+
+    def register2json(self):
+        """
+        escribo la variable dicc
+        en formato json en elfichero registered.json
+        """
+        with open('registered.json', 'w') as jsonfile:
+            json.dump(self.dicc, jsonfile, indent=4)
+
+
     def handle(self):
         """
         handle method of the server class
@@ -35,11 +45,21 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
                 #convierto el tiempo a horas min segundos
                 TiempoHMS = time.strftime('%Y-%m-%d %H:%M:%S',
                                             time.gmtime(Tiempo))
+                #tiempo actual
+                Ahora = time.strftime('%Y-%m-%d %H:%M:%S',
+                                    time.gmtime(time.time()))
+                print(Ahora)
                 self.dicc[user] = {'address': IP, 'expires': TiempoHMS}
-                if expires == '0':
+                userBorrados = []
+                for user in self.dicc:
+                    if Ahora >= self.dicc[user]['expires']:
+                        userBorrados.append(user)
+                #COmo no podemos modificar el tamaño del diccionario mientras
+                #lo recorremos necesitamos hacer esto
+                for user in userBorrados:
                     del self.dicc[user]
+                self.register2json()
                 print(self.dicc)
-
 if __name__ == "__main__":
     # Listens at localhost ('') port 6001
     # and calls the EchoHandler class to manage the request

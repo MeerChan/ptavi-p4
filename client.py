@@ -12,7 +12,9 @@ try:
     PORTSERVER = int(sys.argv[2])
     PETICION = sys.argv[3]
     ADDRESS = sys.argv[4]
-    EXPIRES = sys.argv[5]
+    EXPIRES = int(sys.argv[5])
+except ValueError:
+    sys.exit("puerto and expires_value must be numers")
 except IndexError:
     sys.exit("Usage: client.py ip puerto register sip_address expires_value")
 
@@ -20,10 +22,10 @@ except IndexError:
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
     my_socket.connect((IPSERVER, PORTSERVER))
     print("Enviando:", PETICION.upper() + ' sip:' + ADDRESS + ' SIP/2.0')
-    print("Expires: " + EXPIRES)
+    print("Expires: " + str(EXPIRES))
     #Se lo enviamos al servidor
     my_socket.send(bytes(PETICION.upper() + ' sip:' + ADDRESS + ' SIP/2.0\r\n '
-                            + EXPIRES, 'utf-8') + b'\r\n\r\n')
+                            + str(EXPIRES), 'utf-8') + b'\r\n\r\n')
     data = my_socket.recv(1024)
     print('Recibido -- ', data.decode('utf-8'))
 
