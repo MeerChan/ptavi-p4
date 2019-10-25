@@ -15,6 +15,16 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     dicc = {}
 
 
+    def json2register(self):
+        """Descargo fichero json en el diccionario."""
+        try:
+            with open('registered.json', 'r') as jsonfile:
+                self.dicc = json.load(jsonfile)
+        # Me da igual cual sea la excepcion (error) sigo
+        except:
+            print('nova')
+            pass
+
     def register2json(self):
         """
         escribo la variable dicc
@@ -29,6 +39,8 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         handle method of the server class
         (all requests will be handled by this method)
         """
+        # COmpruebo si ya esta creado el json
+        self.json2register()
         self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
         milinea = ''
         for line in self.rfile:
