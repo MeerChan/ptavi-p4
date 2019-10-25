@@ -25,13 +25,20 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             milinea += line.decode('utf-8')
         if milinea != '\r\n':
             print("El cliente nos manda ", milinea)
-            (peticion, address, sip) = milinea.split()
+            (peticion, address, sip, expires) = milinea.split()
             if peticion == 'REGISTER':
                 IP = self.client_address[0]
+                #quito el sip, quedandome con el segundo obejeto del split
                 user = address.split(':')[1]
-                self.dicc[user] = {'address': IP}
-
-
+                # Timpo en el que caducaria la sesion (actual+expires)
+                Tiempo = time.time() + int(expires)
+                #convierto el tiempo a horas min segundos
+                TiempoHMS = time.strftime('%Y-%m-%d %H:%M:%S',
+                                            time.gmtime(Tiempo))
+                self.dicc[user] = {'address': IP, 'expires': TiempoHMS}
+                if expires == '0':
+                    del self.dicc[user]
+                print(self.dicc)
 
 if __name__ == "__main__":
     # Listens at localhost ('') port 6001
