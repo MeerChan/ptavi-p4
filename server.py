@@ -21,8 +21,7 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             with open('registered.json', 'r') as jsonfile:
                 self.dicc = json.load(jsonfile)
         # Me da igual cual sea la excepcion (error) sigo
-        except:
-            print('nova')
+        except():
             pass
 
     def register2json(self):
@@ -46,20 +45,20 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             milinea += line.decode('utf-8')
         if milinea != '\r\n':
             print("El cliente nos manda ", milinea)
-            (peticion, address, sip, expires) = milinea.split()
+            # Quitamosos el expires: que no usamos con _
+            (peticion, address, sip, _, expire) = milinea.split()
             if peticion == 'REGISTER':
                 IP = self.client_address[0]
                 # quito el sip, quedandome con el segundo obejeto del split
                 user = address.split(':')[1]
                 # Timpo en el que caducaria la sesion (actual+expires)
-                Tiempo = time.time() + int(expires)
+                Tiempo = time.time() + int(expire)
                 # convierto el tiempo a horas min segundos
                 TiempoHMS = time.strftime('%Y-%m-%d %H:%M:%S',
                                           time.gmtime(Tiempo))
                 # tiempo actual
                 Ahora = time.strftime('%Y-%m-%d %H:%M:%S',
                                       time.gmtime(time.time()))
-                print(Ahora)
                 self.dicc[user] = {'address': IP, 'expires': TiempoHMS}
                 userBorrados = []
                 for user in self.dicc:
@@ -70,7 +69,6 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
                 for user in userBorrados:
                     del self.dicc[user]
                 self.register2json()
-                print(self.dicc)
 
 
 if __name__ == "__main__":
